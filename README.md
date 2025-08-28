@@ -1,132 +1,230 @@
-Healthcare Backend
-Django-based REST API for a healthcare system using Django REST Framework (DRF) and PostgreSQL. Supports user authentication (JWT), patient/doctor management, and patient-doctor mappings.
-Features
+# 🏥 Healthcare Backend
 
-JWT authentication (djangorestframework-simplejwt)
-CRUD for patients (user-specific) and doctors
-Assign doctors to patients with ownership validation
-PostgreSQL with Django ORM
-Environment variables for secure config
-Error handling for invalid inputs
+A **Django REST API** for a healthcare system, built with **Django REST Framework (DRF)** and **PostgreSQL**.
+It supports **JWT authentication**, **patient/doctor management**, and **patient-doctor mappings**.
 
-Technologies
+---
 
-Django 4.x
-Django REST Framework
-djangorestframework-simplejwt
-PostgreSQL 16.x
-Python 3.x
-python-dotenv, psycopg2-binary
+## ✨ Features
 
-Setup
+* 🔐 **JWT Authentication** with `djangorestframework-simplejwt`
+* 👨‍⚕️ **CRUD operations** for Patients (user-specific) and Doctors
+* 🔗 **Patient-Doctor mapping** with ownership validation
+* 🗄 **PostgreSQL database** with Django ORM
+* ⚙️ **Secure configuration** using `.env`
+* 🛡 **Robust error handling**
 
-Navigate to Project:
-cd C:\Users\Shreyansh Goel\Documents\Shreyansh\project\health-care-backend
+---
 
+## 🛠 Tech Stack
 
-Virtual Environment:
+* **Backend:** Django 4.x, Django REST Framework
+* **Auth:** djangorestframework-simplejwt
+* **Database:** PostgreSQL 16.x
+* **Language:** Python 3.x
+* **Utilities:** python-dotenv, psycopg2-binary
+
+---
+
+## 🚀 Setup
+
+### 1️⃣ Clone the Repository
+
+```bash
+git clone https://github.com/your-username/healthcare-backend.git
+cd healthcare-backend
+```
+
+### 2️⃣ Create Virtual Environment
+
+```bash
 python -m venv venv
-venv\Scripts\activate
+venv\Scripts\activate   # On Windows
+source venv/bin/activate  # On Linux/Mac
+```
 
+### 3️⃣ Install Dependencies
 
-Install Dependencies:
+```bash
 pip install django djangorestframework djangorestframework-simplejwt psycopg2-binary python-dotenv
+```
 
+### 4️⃣ Setup Environment Variables
 
-Environment Variables:
+Create a `.env` file in the project root:
 
-Create .env in project root:SECRET_KEY=hja628aom&w+kw1w$c4!!f1awitb(7!rs53v=1i9y81@03z86#
+```ini
+SECRET_KEY=hja628aom&w+kw1w$c4!!f1awitb(7!rs53v=1i9y81@03z86#
 DB_PASSWORD=Shiggysonu@3
+```
 
+### 5️⃣ Apply Migrations
 
-
-
-Apply Migrations:
+```bash
 python manage.py makemigrations
 python manage.py migrate
+```
 
+### 6️⃣ Run Server
 
-Run Server:
+```bash
 python manage.py runserver
+```
 
+Access at 👉 [http://127.0.0.1:8000](http://127.0.0.1:8000)
 
+---
 
-Database
+## 🗄 Database
 
-Database: PostgreSQL (healthcare_db)
-Tables: api_user, api_patient, api_doctor, api_patientdoctormapping, Django tables (auth_*, django_*)
-Verify:"C:\Program Files\PostgreSQL\16\bin\psql.exe" -U postgres -d healthcare_db
+* **DB Name:** `healthcare_db`
+* **Tables:**
+
+  * `api_user`
+  * `api_patient`
+  * `api_doctor`
+  * `api_patientdoctormapping`
+  * Default Django tables (`auth_*`, `django_*`)
+
+Check tables:
+
+```sql
 \dt
 SELECT id, user_id, name FROM api_patient;
+```
 
+---
 
+## 📡 API Endpoints
 
-API Endpoints
-Authenticated endpoints require Authorization: Bearer <access_token> (5-minute expiry).
-Authentication
+All **authenticated endpoints** require:
 
-POST /api/auth/register/: Register usercurl -X POST http://127.0.0.1:8000/api/auth/register/ -H "Content-Type: application/json" -d "{\"name\": \"Test User\", \"email\": \"test@example.com\", \"password\": \"strongpass123\"}"
+```http
+Authorization: Bearer <access_token>
+```
 
+(Access tokens expire in **5 minutes**)
 
-POST /api/auth/login/: Get JWT tokenscurl -X POST http://127.0.0.1:8000/api/auth/login/ -H "Content-Type: application/json" -d "{\"email\": \"test@example.com\", \"password\": \"strongpass123\"}"
+---
 
+### 🔑 Authentication
 
-POST /api/auth/refresh/: Refresh tokencurl -X POST http://127.0.0.1:8000/api/auth/refresh/ -H "Content-Type: application/json" -d "{\"refresh\": \"<refresh_token>\"}"
+#### Register User
 
+```http
+POST /api/auth/register/
+```
 
+```bash
+curl -X POST http://127.0.0.1:8000/api/auth/register/ \
+-H "Content-Type: application/json" \
+-d '{"name":"Test User","email":"test@example.com","password":"strongpass123"}'
+```
 
-Patient Management (Authenticated)
+#### Login (Get JWT Tokens)
 
-POST /api/patients/: Add patientcurl -X POST http://127.0.0.1:8000/api/patients/ -H "Content-Type: application/json" -H "Authorization: Bearer <access_token>" -d "{\"name\": \"John Doe\", \"date_of_birth\": \"1990-01-01\", \"gender\": \"Male\", \"address\": \"123 Main St\", \"phone\": \"555-1234\"}"
+```http
+POST /api/auth/login/
+```
 
+#### Refresh Token
 
-GET /api/patients/: List user’s patients
-GET /api/patients//: Get patient
-PUT /api/patients//: Update patient
-DELETE /api/patients//: Delete patient
+```http
+POST /api/auth/refresh/
+```
 
-Doctor Management (Authenticated)
+---
 
-POST /api/doctors/: Add doctorcurl -X POST http://127.0.0.1:8000/api/doctors/ -H "Content-Type: application/json" -H "Authorization: Bearer <access_token>" -d "{\"name\": \"Dr. Smith\", \"specialty\": \"Cardiology\", \"phone\": \"555-9012\", \"email\": \"dr.smith@example.com\"}"
+### 👨‍⚕️ Patient Management
 
+* `POST   /api/patients/` → Create patient
+* `GET    /api/patients/` → List user’s patients
+* `GET    /api/patients/<id>/` → Get patient
+* `PUT    /api/patients/<id>/` → Update patient
+* `DELETE /api/patients/<id>/` → Delete patient
 
-GET /api/doctors/: List doctors
-GET /api/doctors//: Get doctor
-PUT /api/doctors//: Update doctor
-DELETE /api/doctors//: Delete doctor
+Example:
 
-Patient-Doctor Mapping (Authenticated)
+```bash
+curl -X POST http://127.0.0.1:8000/api/patients/ \
+-H "Content-Type: application/json" \
+-H "Authorization: Bearer <access_token>" \
+-d '{"name":"John Doe","date_of_birth":"1990-01-01","gender":"Male","address":"123 Main St","phone":"555-1234"}'
+```
 
-POST /api/mappings/: Assign doctor to patientcurl -X POST http://127.0.0.1:8000/api/mappings/ -H "Content-Type: application/json" -H "Authorization: Bearer <access_token>" -d "{\"patient\": 1, \"doctor\": 1}"
+---
 
+### 🩺 Doctor Management
 
-GET /api/mappings/: List mappings
-GET /api/mappings//: Get doctors for patient
-DELETE /api/mappings//: Remove mapping
+* `POST   /api/doctors/` → Create doctor
+* `GET    /api/doctors/` → List doctors
+* `GET    /api/doctors/<id>/` → Get doctor
+* `PUT    /api/doctors/<id>/` → Update doctor
+* `DELETE /api/doctors/<id>/` → Delete doctor
 
-Testing
+---
 
-curl Workflow:set TOKEN=<access_token>
-curl -X POST http://127.0.0.1:8000/api/patients/ -H "Content-Type: application/json" -H "Authorization: Bearer %TOKEN%" -d "{\"name\": \"John Doe\", \"date_of_birth\": \"1990-01-01\", \"gender\": \"Male\", \"address\": \"123 Main St\", \"phone\": \"555-1234\"}"
-curl -X POST http://127.0.0.1:8000/api/doctors/ -H "Content-Type: application/json" -H "Authorization: Bearer %TOKEN%" -d "{\"name\": \"Dr. Smith\", \"specialty\": \"Cardiology\", \"phone\": \"555-9012\", \"email\": \"dr.smith@example.com\"}"
-curl -X POST http://127.0.0.1:8000/api/mappings/ -H "Content-Type: application/json" -H "Authorization: Bearer %TOKEN%" -d "{\"patient\": 1, \"doctor\": 1}"
+### 🔗 Patient-Doctor Mapping
 
+* `POST   /api/mappings/` → Assign doctor to patient
+* `GET    /api/mappings/` → List mappings
+* `GET    /api/mappings/<id>/` → Get doctors for patient
+* `DELETE /api/mappings/<id>/` → Remove mapping
 
-Postman: Import curl commands or set headers manually.
-Database Check:SELECT * FROM api_patientdoctormapping;
+Example:
 
+```bash
+curl -X POST http://127.0.0.1:8000/api/mappings/ \
+-H "Content-Type: application/json" \
+-H "Authorization: Bearer <access_token>" \
+-d '{"patient":1,"doctor":1}'
+```
 
+---
 
-Troubleshooting
+## 🧪 Testing
 
-401 Unauthorized: Re-login or refresh token.
-400 Bad Request: Verify IDs and ownership:SELECT id, user_id, name FROM api_patient WHERE user_id = <user_id>;
+### Using `curl`
 
+```bash
+set TOKEN=<access_token>
+curl -X POST http://127.0.0.1:8000/api/patients/ \
+-H "Content-Type: application/json" \
+-H "Authorization: Bearer %TOKEN%" \
+-d '{"name":"John Doe","date_of_birth":"1990-01-01","gender":"Male","address":"123 Main St","phone":"555-1234"}'
+```
 
-Server Issues:python manage.py runserver
+### Using Postman
+
+* Import `curl` commands
+* Or manually set `Authorization` header
+
+### Database Check
+
+```sql
+SELECT * FROM api_patientdoctormapping;
+```
+
+---
+
+## 🐞 Troubleshooting
+
+* **401 Unauthorized** → Refresh token or re-login
+* **400 Bad Request** → Check patient ownership
+
+```sql
+SELECT id, user_id FROM api_patient WHERE user_id=<user_id>;
+```
+
+* **Database/Server issues**
+
+```bash
+python manage.py runserver
 net start postgresql-x64-16
+```
 
+---
 
+## 📜 License
 
-License
-MIT License. See LICENSE.
+MIT License. See [LICENSE](LICENSE) for details.
